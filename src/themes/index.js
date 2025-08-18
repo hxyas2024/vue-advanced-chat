@@ -23,9 +23,7 @@ export const defaultThemeStyles = {
 		header: {
 			background: '#fff',
 			colorRoomName: '#0a0a0a',
-			colorRoomInfo: '#9ca6af',
-			position: 'absolute',
-			width: '100%',
+			colorRoomInfo: '#9ca6af'
 		},
 
 		footer: {
@@ -170,9 +168,7 @@ export const defaultThemeStyles = {
 		header: {
 			background: '#181a1b',
 			colorRoomName: '#fff',
-			colorRoomInfo: '#9ca6af',
-			position: 'absolute',
-			width: '100%'
+			colorRoomInfo: '#9ca6af'
 		},
 
 		footer: {
@@ -331,8 +327,6 @@ export const cssThemeVars = ({
 		'--chat-header-bg-color': header.background,
 		'--chat-header-color-name': header.colorRoomName,
 		'--chat-header-color-info': header.colorRoomInfo,
-		'--chat-header-position': header.position,
-		'--chat-header-width': header.width,
 
 		// footer
 		'--chat-footer-bg-color': footer.background,
