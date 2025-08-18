@@ -1,9 +1,9 @@
 .vac-room-header {
-	position: var(--chat-header-position);
+	position: fixed;
 	display: flex;
 	align-items: center;
 	height: 64px;
-	width: var(--chat-header-width);
+	width: 100%;
 	z-index: 10;
 	margin-right: 1px;
 	background: var(--chat-header-bg-color);
