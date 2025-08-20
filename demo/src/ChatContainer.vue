@@ -81,9 +81,11 @@ import * as storageService from '@/database/storage'
 import { parseTimestamp, formatTimestamp } from '@/utils/dates'
 import logoAvatar from '@/assets/logo.png'
 
-import { register } from 'vue-advanced-chat'
+// TODO 实际使用时，要使用package.json里加依赖 		"vue-advanced-chat": "file:D:/project/web/vue-advanced-chat"
+// import { register } from 'vue-advanced-chat'
 // import { register } from './../../dist/vue-advanced-chat.es.js'
-// import { register } from './../../src/lib/index.js'
+// 即时生效
+import { register } from './../../src/lib/index.js'
 register()
 
 export default {

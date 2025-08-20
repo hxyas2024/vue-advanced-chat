@@ -440,7 +440,7 @@ export default {
 
 			if (items) {
 				Array.from(items).forEach(item => {
-					if (item.type.includes('image')||item.kind.includes('file')) {
+					if (item.type.includes('image') || item.kind.includes('file')) {
 						const blob = item.getAsFile()
 						this.onFileChange([blob])
 					}
