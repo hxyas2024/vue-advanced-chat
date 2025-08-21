@@ -63,6 +63,9 @@
 			@typing-message="typingMessage($event.detail[0])"
 			@toggle-rooms-list="$emit('show-demo-options', $event.detail[0].opened)"
 		>
+<!--      <div slot="custom-action-icon">
+          <svg-icon name="audio-play" />
+      </div>-->
 <!--      <div slot="rooms-header">
         This is a new room header
       </div>-->
@@ -89,9 +92,11 @@ import logoAvatar from '@/assets/logo.png'
 // import { register } from './../../dist/vue-advanced-chat.es.js'
 // 即时生效
 import { register } from './../../src/lib/index.js'
+import SvgIcon from '../../src/components/SvgIcon/SvgIcon.vue'
 register()
 
 export default {
+  components: { SvgIcon },
 	props: {
 		currentUserId: { type: String, required: true },
 		theme: { type: String, required: true },
