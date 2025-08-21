@@ -63,6 +63,9 @@
 			@typing-message="typingMessage($event.detail[0])"
 			@toggle-rooms-list="$emit('show-demo-options', $event.detail[0].opened)"
 		>
+<!--      <div slot="rooms-header">
+        This is a new room header
+      </div>-->
 			<!-- <div
 				v-for="message in messages"
 				:slot="'message_' + message._id"
