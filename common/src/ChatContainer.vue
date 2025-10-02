@@ -86,6 +86,7 @@ import * as firebaseService from '@/database/firebase'
 import * as storageService from '@/database/storage'
 import { parseTimestamp, formatTimestamp } from '@/utils/dates'
 import logoAvatar from '@/assets/logo.png'
+import request from '@/utils/request'
 
 // TODO 实际使用时，要使用package.json里加依赖 		"vue-advanced-chat": "file:D:/project/web/vue-advanced-chat"
 // import { register } from 'vue-advanced-chat'
@@ -229,17 +230,40 @@ export default {
 				this.roomsPerPage,
 				this.startRooms
 			)
+      let roomsData = [];
+      // 初始化用户
+      await request({
+        url: 'http://localhost:8082/im/user/test/rooms',
+        method: 'GET',
+        params: {
+          currentUserId:this.currentUserId,
+          roomsPerPage:this.roomsPerPage,
+          startRooms:this.startRooms
+      }
+      }).then(response => {
+          if (response.code === 200) {
+            roomsData= response.data
+          } else {
+            roomsData = []
+          }
+        }
+      )
+      console.log(this.currentUserId,
+        this.roomsPerPage,
+        this.startRooms,roomsData)
 
-			const { data, docs } = await firestoreService.getRooms(query)
+
+      //数据源
 			// this.incrementDbCounter('Fetch Rooms', data.length)
-
-			this.roomsLoaded = data.length === 0 || data.length < this.roomsPerPage
+      //如果数据为0或者小于每页数量，则没有更多数据了
+			this.roomsLoaded = roomsData.length === 0 || roomsData.length < this.roomsPerPage
 
 			if (this.startRooms) this.endRooms = this.startRooms
-			this.startRooms = docs[docs.length - 1]
+      //把最后一个作为查询条件
+			this.startRooms = roomsData[roomsData.length - 1].id
 
 			const roomUserIds = []
-			data.forEach(room => {
+      roomsData.forEach(room => {
 				room.users.forEach(userId => {
 					const foundUser = this.allUsers.find(user => user?._id === userId)
 					if (!foundUser && roomUserIds.indexOf(userId) === -1) {
@@ -258,7 +282,7 @@ export default {
 			this.allUsers = [...this.allUsers, ...(await Promise.all(rawUsers))]
 
 			const roomList = {}
-			data.forEach(room => {
+      roomsData.forEach(room => {
 				roomList[room.id] = { ...room, users: [] }
 
 				room.users.forEach(userId => {
@@ -284,16 +308,17 @@ export default {
 						? roomContacts[0].avatar
 						: logoAvatar
 
+        room.seconds=room.lastUpdated
 				formattedRooms.push({
 					...room,
 					roomId: key,
 					avatar: roomAvatar,
-					index: room.lastUpdated.seconds,
+					index: room.lastUpdated,
 					lastMessage: {
 						content: 'Room created',
 						timestamp: formatTimestamp(
-							new Date(room.lastUpdated.seconds),
-							room.lastUpdated
+							new Date(room.lastUpdated),
+              room.seconds
 						)
 					}
 				})
