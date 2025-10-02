@@ -39,6 +39,8 @@
 				</button>
 			</div>
 
+
+      <!--  聊天窗主体    -->
 			<chat-container
 				v-if="showChat"
 				:current-user-id="currentUserId"
@@ -57,6 +59,7 @@
 <script>
 import * as firestoreService from '@/database/firestore'
 import * as storageService from '@/database/storage'
+import request from '@/utils/request'
 
 import ChatContainer from './ChatContainer'
 
@@ -69,24 +72,7 @@ export default {
 		return {
 			theme: 'light',
 			showChat: true,
-			users: [
-				{
-					_id: '6R0MijpK6M4AIrwaaCY2',
-					username: 'Luke',
-					avatar: 'https://66.media.tumblr.com/avatar_c6a8eae4303e_512.pnj'
-				},
-				{
-					_id: 'SGmFnBZB4xxMv9V4CVlW',
-					username: 'Leia',
-					avatar: 'https://media.glamour.com/photos/5695e9d716d0dc3747eea3ef/master/w_1600,c_limit/beauty-2015-12-princess-leia-1-main.jpg'
-				},
-				{
-					_id: '6jMsIXUrBHBj7o2cRlau',
-					username: 'Yoda',
-					avatar:
-						'https://vignette.wikia.nocookie.net/teamavatarone/images/4/45/Yoda.jpg/revision/latest?cb=20130224160049'
-				}
-			],
+			users: [],
 			currentUserId: '6R0MijpK6M4AIrwaaCY2',
 			isDevice: false,
 			showDemoOptions: true,
@@ -113,7 +99,21 @@ export default {
 			if (ev.isTrusted) this.isDevice = window.innerWidth < 500
 		})
 	},
-
+  created() {
+    // 初始化用户
+    request({
+      url: 'http://localhost:8082/im/user/test',
+      method: 'GET'
+    }).then(response => {
+      if (response.code === 200) {
+        this.users = response.data
+      } else {
+        this.users = []
+      }
+        console.log(response)
+      }
+    )
+  },
 	methods: {
 		resetData() {
 			firestoreService.getAllRooms().then(({ data }) => {
