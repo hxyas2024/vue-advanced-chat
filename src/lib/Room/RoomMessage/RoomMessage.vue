@@ -88,6 +88,7 @@
 							</template>
 						</message-reply>
 
+          <!--  显示发送消息       -->
 						<format-message
 							v-if="
 								!!message.deleted || !message.files || !message.files.length
