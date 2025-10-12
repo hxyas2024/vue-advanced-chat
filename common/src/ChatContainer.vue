@@ -115,7 +115,7 @@ export default {
       rooms: [],
       roomId: '',
       startRooms: null,
-      ws:null,
+      ws: null,
       endRooms: null,
       roomsLoaded: false,
       loadingRooms: true,
@@ -197,7 +197,7 @@ export default {
         pingInterval: 25000,
         maxReconnectAttempts: 0,
         pingMessage: function() {
-          return "{ 'type': '10', 'data': 'ping' }"
+          return "{ 'type': 10, 'data': 'ping' }"
         }
       })
 
@@ -592,7 +592,7 @@ export default {
 
       if (replyMessage) {
         message.replyMessage = {
-          _id: replyMessage._id,
+          _id: replyMessage._id, // 回复的ID
           content: replyMessage.content,
           sender_id: replyMessage.senderId
         }
@@ -610,7 +610,7 @@ export default {
       }
       firestoreService.updateRoom(roomId, { lastUpdated: new Date() })
 
-      this.ws.send({ ...message, timestamp: dateFormatter.format(new Date(), 'YYYY-MM-DD HH:mm:ss'), roomId, type: '2' })
+      this.ws.send({ ...message, timestamp: dateFormatter.format(new Date(), 'YYYY-MM-DD HH:mm:ss'), roomId, type: 2 })
     },
 
     async editMessage({ messageId, newContent, roomId, files }) {
