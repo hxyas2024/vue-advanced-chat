@@ -601,6 +601,8 @@ export default {
           message.replyMessage.files = replyMessage.files
         }
       }
+      console.log('a')
+      // 会触发listenLastMessage，然后调用formatLastMessage
       const { id } = await firestoreService.addMessage(roomId, message)
 
       if (files) {
