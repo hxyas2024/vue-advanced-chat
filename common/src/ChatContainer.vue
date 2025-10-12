@@ -94,6 +94,8 @@ import request from '@/utils/request'
 // 即时生效
 import { register } from './../../src/lib/index.js'
 import SvgIcon from '../../src/components/SvgIcon/SvgIcon.vue'
+import WebSocketService from '@/utils/websocket'
+import { dateFormatter } from '@/utils/dateUtils'
 
 register()
 
@@ -113,6 +115,7 @@ export default {
       rooms: [],
       roomId: '',
       startRooms: null,
+      ws:null,
       endRooms: null,
       roomsLoaded: false,
       loadingRooms: true,
@@ -178,6 +181,7 @@ export default {
   },
 
   mounted() {
+    this.connectWs()
     this.addCss()
 
     this.fetchRooms()
@@ -185,6 +189,52 @@ export default {
   },
 
   methods: {
+    async connectWs() {
+// 创建 WebSocket 实例
+      this.ws = new WebSocketService({
+        url: 'ws://localhost:10088/ws?token=1',
+        autoReconnect: true,
+        pingInterval: 25000,
+        maxReconnectAttempts: 0,
+        pingMessage: function() {
+          return "{ 'type': '10', 'data': 'ping' }"
+        }
+      })
+
+// 设置拦截器
+      this.ws.interceptors.request.use(
+        (event) => {
+          console.log('连接建立', event)
+          // 连接成功后发送认证信息等
+          this.ws.send({ type: 'auth', token: 'your-token' })
+        },
+        (error) => {
+          console.error('连接错误', error)
+        }
+      )
+
+      this.ws.interceptors.response.use(
+        (message) => {
+          console.log('收到消息:', message)
+          // 处理业务消息
+          if (message.data && message.data.type === 'chat') {
+            // 处理聊天消息
+          }
+        },
+        (error) => {
+          console.error('消息处理错误', error)
+        }
+      )
+
+      // 发送消息
+      this.ws.send({ type: 'chat', content: 'Hello WebSocket' })
+
+      // 手动重连
+      // ws.reconnect()
+
+      // 关闭连接
+      // ws.close()
+    },
     async addCss() {
       if (import.meta.env.MODE === 'development') {
         const styles = await import('./../../src/styles/index.scss')
@@ -390,7 +440,15 @@ export default {
         message.sender_id !== this.currentUserId
           ? room.users.find(user => message.sender_id === user._id)?.username
           : ''
-
+      /*if (message.timestamp.seconds) {
+        formatTimestamp(
+          new Date(message.timestamp.seconds * 1000),
+          message.timestamp
+        )
+      }else {
+        dateFormatter.parse(message.timestamp, 'YYYY-MM-DD HH:mm:ss');
+        firestoreService.deleteMessage(room.id, message.id)
+      }*/
       return {
         ...message,
         ...{
@@ -519,11 +577,12 @@ export default {
 
       return formattedMessage
     },
-
+    // 发送消息
     async sendMessage({ content, roomId, files, replyMessage }) {
       const message = {
         sender_id: this.currentUserId,
         content,
+        roomId,
         timestamp: new Date()
       }
 
@@ -542,7 +601,6 @@ export default {
           message.replyMessage.files = replyMessage.files
         }
       }
-
       const { id } = await firestoreService.addMessage(roomId, message)
 
       if (files) {
@@ -550,8 +608,9 @@ export default {
           await this.uploadFile({ file: files[index], messageId: id, roomId })
         }
       }
-
       firestoreService.updateRoom(roomId, { lastUpdated: new Date() })
+
+      this.ws.send({ ...message, timestamp: dateFormatter.format(new Date(), 'YYYY-MM-DD HH:mm:ss'), roomId, type: '2' })
     },
 
     async editMessage({ messageId, newContent, roomId, files }) {
