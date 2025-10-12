@@ -102,7 +102,7 @@ export default {
   created() {
     // 初始化用户
     request({
-      url: 'http://localhost:8082/im/user/test',
+      url: 'http://localhost:8082/im/user/list',
       method: 'GET'
     }).then(response => {
       if (response.code === 200) {

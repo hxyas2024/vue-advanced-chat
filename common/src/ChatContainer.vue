@@ -346,6 +346,10 @@ export default {
       // setTimeout(() => console.log('TOTAL', this.dbRequestCount), 2000)
     },
 
+    /**
+     * 监听每个房间的最后一条消息
+     * @param room
+     */
     listenLastMessage(room) {
       const listener = firestoreService.listenLastMessage(
         room.roomId,
